@@ -1,0 +1,40 @@
+\documentclass[draft]{book}
+
+\begin{document}
+
+\begin{titlepage}
+\title{BAM\\
+Brian's Abstract Machine
+Design and Implementation}
+\author{Brian Hurt}
+\maketitle
+\end{titlepage}
+
+\tableofcontents
+\listoftables
+\listoffigures
+
+\chapter{Introduction}
+
+This book describes the design and implementation of BAM: Brian's
+Abstract Machine.  BAM is a library (written in Haskell) implementing
+the back end of a compiler- similar to what LLVM provides.  BAM is,
+however, different in two important ways.
+
+Firstly, most compiler back ends are written in C++, which, in the
+author's opinion, is the worst possible language for the task.  BAM, by
+contrast, is written in the programming language Haskell.  This has
+important implementation consequences- foremost of which is that the
+lazy evaluation of Haskell allows us to disentangle the instruction
+selection, register allocation, and instruction scheduling passes.  See
+the Choice module (\ref{Choice}) for more information.
+
+Secondly, the choice of initial target languages also deeply influences
+the design of a backend- and most backends use languages like C++ and
+Fortran as initial target languages.  BAM uses Haskell and Prolog as
+it's initial languages of choice.
+
+\include{tex/Choice}
+
+\end{document}
+
