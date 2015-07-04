@@ -25,7 +25,7 @@ QUOTE = dist/build/Quote/Quote
 tex/%.tex: src/%.lhs $(QUOTE)
 	$(QUOTE) < $< > $@
 
-$(QUOTE): utils/Quote.s
+$(QUOTE): utils/Quote.hs
 	cabal build Quote
 
 tex:
