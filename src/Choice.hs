@@ -3,7 +3,7 @@
 Module              : Choice
 Description         : The Choice datastructure and basic operations
 Copyright           : (c) Brian Hurt, 2015
-License             : GPL-3
+License             : LGPL-2.1
 Maintainer          : bhurt42@gmail.com
 Stability           : experimental
 Portability         : safe
@@ -80,7 +80,7 @@ module Choice where
     choice2 :: Choice a -> Choice a -> Choice a
     choice2 = Choice
 
-    choice3 :: Choce a -> Choice a -> Choice a -> Choice a
+    choice3 :: Choice a -> Choice a -> Choice a -> Choice a
     choice3 c1 c2 c3 = Choice c1 (Choice c2 c3)
 
     choice4 :: Choice a -> Choice a -> Choice a -> Choice a -> Choice a
@@ -89,7 +89,7 @@ module Choice where
     choice5 :: Choice a -> Choice a -> Choice a
                 -> Choice a -> Choice a -> Choice a
     choice5 c1 c2 c3 c4 c5 =
-        choice2 (choice2 c1 c2) (choice3 c1 c2 c3)
+        choice2 (choice2 c1 c2) (choice3 c3 c4 c5)
 
     choice6 :: Choice a -> Choice a -> Choice a
                 -> Choice a -> Choice a -> Choice a -> Choice a
@@ -107,21 +107,21 @@ module Choice where
             -- inc :: Choice a -> [ Maybe (Choice a) ]
             --        -> [ (Maybe Choice a) ]
             inc y [] = [ Just y ]
-            inc y ((Just x) : xs) =
-                Nothing : inc (Choice y x) xs
-            inc y (Nothing : xs) = (Just y) : xs
+            inc y ((Just z) : zs) =
+                Nothing : inc (Choice y z) zs
+            inc y (Nothing : zs) = (Just y) : zs
             -- fini :: [ Maybe (Choice a) ] -> Choice a
             fini [] = error "Unreachable code reached" -- Not reachable
-            fini (Nothing : xs) = fini xs
-            fini ((Just x) : xs) = fini2 x xs
-            fini2 x [] = x
-            fini2 x (Nothing : xs) = fini2 x xs
-            fini2 x ((Just y) : ys) = fini2 (Choice x y) ys
+            fini (Nothing : zs) = fini zs
+            fini ((Just z) : zs) = fini2 z zs
+            fini2 z [] = z
+            fini2 z (Nothing : ys) = fini2 z ys
+            fini2 z ((Just y) : ys) = fini2 (Choice z y) ys
 
     followedBy :: Choice a -> Choice a -> Choice a
     followedBy (Choice a b) c =
                 Choice (a `followedBy` c) (b `followedBy` c)
-    followedBy (Emit x a) = Emit x (a `followedBy` c)
+    followedBy (Emit x a) c = Emit x (a `followedBy` c)
     followedBy Done c = c
 
 
@@ -136,6 +136,7 @@ module Choice where
     bind Done _ = Done
 
     instance Applicative Choice where
+        pure = emit
         fs <*> xs = bind fs (\f -> bind xs (\x -> emit (f x)))
 
     instance Monad Choice where
