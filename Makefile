@@ -1,10 +1,12 @@
-LHSFiles = \
-    Choice.lhs
-
-all: lib book
+all: lib doc
 
 lib: .cabal-sandbox dist
 	cabal build -j
+
+# TODO: have real dependencies here.
+.PHONY: doc
+doc: .cabal-sandbox dist
+	cabal haddock
 
 .PHONY: cabal-init
 cabal-init: .cabal-sandbox dist .cabal-sandbox/bin/hlint .cabal-sandbox/bin/hoogle
@@ -16,39 +18,16 @@ dist:
 	cabal sandbox init
 	cabal install -j --enable-documentation --haddock-html --haddock-hoogle --only-dependencies
 
-book: tex book.tex $(LHSFiles:%.lhs=tex/%.tex)
-	latex book.tex
-	latex book.tex
-
-QUOTE = dist/build/Quote/Quote
-
-tex/%.tex: src/%.lhs $(QUOTE)
-	$(QUOTE) < $< > $@
-
-$(QUOTE): utils/Quote.hs
-	cabal build Quote
-
-tex:
-	mkdir -p tex
-
 .PHONY: cabal-clean
 cabal-clean: real-clean
 	rm -rf .cabal-sandbox cabal.sandbox.config Setup.hs
 
 .PHONY: real-clean
 real-clean: clean
-	rm -rf tex
 
 .PHONY: clean
 clean:
 	cabal clean
-	rm -f *.dvi
-	rm -f *.log
-	rm -f *.aux
-	rm -f tex/*.aux
-	rm -f *.lof
-	rm -f *.lot
-	rm -f *.toc
 
 .cabal-sandbox/bin/hlint:
 	cabal install -j --enable-documentation --haddock-html --haddock-hoogle hlint
